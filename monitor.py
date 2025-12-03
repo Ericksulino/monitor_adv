@@ -38,7 +38,6 @@ def monitorar(stop_event):
     net_init = psutil.net_io_counters()
     disk_init = psutil.disk_io_counters()
 
-    # Configuração do logger
     logMonitor = logging.getLogger('logCPU_MEM')
     logMonitor.info("indice,memoria(%),cpu(%),Disco-uso(%),Disk-Read(bytes),Disk-Write(bytes),Net-in(bytes),Net-out(bytes),TimeStamp")
 
