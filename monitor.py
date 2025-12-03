@@ -33,33 +33,45 @@ def aguardar_enter(stop_event):
 def monitorar(stop_event):
     """Coleta as métricas e grava no CSV"""
     num = 0
+
+    # Inicializa as medições de rede e disco
     net_init = psutil.net_io_counters()
     disk_init = psutil.disk_io_counters()
-    logMonitor = logging.getLogger('logCPU_MEM')
 
-    # Cabeçalho CSV
+    # Configuração do logger
+    logMonitor = logging.getLogger('logCPU_MEM')
     logMonitor.info("indice,memoria(%),cpu(%),Disco-uso(%),Disk-Read(bytes),Disk-Write(bytes),Net-in(bytes),Net-out(bytes),TimeStamp")
 
     while not stop_event.is_set():
+        # Coleta a utilização da CPU e memória
         cpu = psutil.cpu_percent(interval=1)
         mem = psutil.virtual_memory().percent
 
-        # Disco total e I/O
+        # Coleta uso do disco total e I/O
         uso_disco_pct = psutil.disk_usage('/').percent
         disk_io = psutil.disk_io_counters()
         disk_read = disk_io.read_bytes - disk_init.read_bytes
         disk_write = disk_io.write_bytes - disk_init.write_bytes
 
-        # Rede
+        # Coleta a rede (bytes recebidos e enviados)
         net_io = psutil.net_io_counters()
         net_in = net_io.bytes_recv - net_init.bytes_recv
         net_out = net_io.bytes_sent - net_init.bytes_sent
 
+        # Atualiza as variáveis de medição para a próxima iteração
+        net_init = net_io
+        disk_init = disk_io
+
+        # Marca o timestamp
         timestamp = int(time.time())
         num += 1
+
+        # Formatação da linha de dados
         linha = "{},{},{},{},{},{},{},{},{}".format(
             num, mem, cpu, uso_disco_pct, disk_read, disk_write, net_in, net_out, timestamp
         )
+
+        # Grava a linha no log e imprime
         logMonitor.info(linha)
         print(num, '-', linha)
 
