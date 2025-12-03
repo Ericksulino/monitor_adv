@@ -46,16 +46,16 @@ def monitorar(stop_event):
         cpu = psutil.cpu_percent(interval=1)
         mem = psutil.virtual_memory().percent
 
-        # Coleta uso do disco total e I/O
-        uso_disco_pct = psutil.disk_usage('/').percent
+        # Coleta o uso total do disco e I/O
+        uso_disco_pct = psutil.disk_usage('/').percent  # Percentual de uso do disco
         disk_io = psutil.disk_io_counters()
-        disk_read = disk_io.read_bytes - disk_init.read_bytes
-        disk_write = disk_io.write_bytes - disk_init.write_bytes
+        disk_read = disk_io.read_bytes - disk_init.read_bytes  # Diferença de leitura
+        disk_write = disk_io.write_bytes - disk_init.write_bytes  # Diferença de escrita
 
         # Coleta a rede (bytes recebidos e enviados)
         net_io = psutil.net_io_counters()
-        net_in = net_io.bytes_recv - net_init.bytes_recv
-        net_out = net_io.bytes_sent - net_init.bytes_sent
+        net_in = net_io.bytes_recv - net_init.bytes_recv  # Diferença de bytes recebidos
+        net_out = net_io.bytes_sent - net_init.bytes_sent  # Diferença de bytes enviados
 
         # Atualiza as variáveis de medição para a próxima iteração
         net_init = net_io
@@ -73,7 +73,6 @@ def monitorar(stop_event):
         # Grava a linha no log e imprime
         logMonitor.info(linha)
         print(num, '-', linha)
-
 
 if __name__ == "__main__":
     # === Tratamento dos argumentos ===
